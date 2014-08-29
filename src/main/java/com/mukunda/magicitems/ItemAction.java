@@ -14,7 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 public abstract class ItemAction {
 
-	protected Plugin plugin;
+	private Plugin plugin;
 	private ItemStack item; 
 	private Player player;
 	

@@ -33,40 +33,40 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MagicItems extends JavaPlugin implements Listener {
-	
+
 	private static MagicItems context;
 	public static MagicItems getContext() {
 		return context;
 	}
-	
+
 	private HashMap<String,Definition> definitions;
 
 	public void loadDefinitions() {
 		loadDefinitions(null);
 	}
-	
+
 	public void loadDefinitions( File folder ) {
 		if( folder == null ) folder = new File( getDataFolder(), "items" );
 		File[] itemFiles = folder.listFiles();
 		for( File file : itemFiles ) {
-			
+
 			if( file.isDirectory() ) {
 				loadDefinitions( folder );
 				continue;
 			}
-			
+
 			if( !file.isFile() ) continue;
 			if( !file.getName().endsWith(".yml") ) continue;
-			
+
 			FileConfiguration config = YamlConfiguration.loadConfiguration( file );
 			Set<String> bookListing = config.getKeys(false);
-			
+
 			for( String bookName: bookListing ) {
 				if( !config.isConfigurationSection( bookName ) ) {
 					getLogger().warning( "Rogue key \""+bookName+"\" in book definition file." );
 					continue;
 				}
-				
+
 				try {
 					if( definitions.containsKey( bookName ) ) {
 						getLogger().warning( "Duplicate book name found: \""+bookName+"\". Skipping." );
@@ -75,94 +75,94 @@ public class MagicItems extends JavaPlugin implements Listener {
 					Definition book = new Definition( config.getConfigurationSection( bookName ) );
 					definitions.put( bookName, book );
 					getLogger().info( "Loaded: " + bookName );
-					
+
 				} catch( ItemConfigException e ) {
 					getLogger().warning( "Couldn't load \""+ bookName +"\" - " + e.getMessage() );
 				}
 			}
-			
-			
+
+
 		}
 	}
-	
+
 	public Definition getDefinition( String name ) {
 		return definitions.get( name );
 	}
-	
+
 	public Definition getDefinition( ItemStack item ) {
 		if( item == null ) return null;
 		String name = Definition.tryGetName( item );
 		if( name == null ) return null;
 		return getDefinition(name);
 	}
-	
-    @Override
+
+	@Override
 	public void onEnable() {
-    	context = this;
-    	definitions = new HashMap<String,Definition>();
-		
+		context = this;
+		definitions = new HashMap<String,Definition>();
+
 		try {
 			Files.createDirectories( getDataFolder().toPath().resolve("items") );
 		} catch( IOException e ) {
 			getLogger().warning( "Couldn't setup data folders." );
 		}
-		
+
 		loadDefinitions();
-		
+
 		getServer().getPluginManager().registerEvents( this, this );
 	}
-    
-    @Override
-    public void onDisable() {
-    	context = null;
-    }
-    
-    @SuppressWarnings("deprecation")
+
+	@Override
+	public void onDisable() {
+		context = null;
+	}
+
+	@SuppressWarnings("deprecation")
 	private void giveItemToPlayer( Player player, ItemStack item ) {
-    	player.getInventory().addItem( item );
+		player.getInventory().addItem( item );
 		player.updateInventory();
 		player.sendMessage( ChatColor.GREEN + "Here you go.");
-    }
-    
+	}
+
 	@Override 
-    public boolean onCommand( CommandSender sender, Command cmd, String label, String[] args ) {
-    	if( cmd.getName().equalsIgnoreCase("magicitems") ) {
-    		if( args.length < 1 ) {
-    			sender.sendMessage( "/magicitems <command>" );
-    			sender.sendMessage( "  create - create an item" );
-    			sender.sendMessage( "  reload - reload definitions" );
-    		} else {
-    			if( args[0].equalsIgnoreCase( "create" ) ) {
-    				if( !(sender instanceof Player) ) {
-    	    			sender.sendMessage( "This is a player only command." );
-    	    			return true;
-    	    		}
-    	    		Player player = (Player)sender;
-    	    		
-    	    		if( args.length < 2 ) {
-    	    			player.sendMessage( "Usage: /magicitems create <name>" );
-    	    			player.sendMessage( "Creates a magic item. <name> must be defined in the item configs." );
-    	    			return true;
-    	    		} 
-    	    		Definition def = getDefinition( args[1] );
-    	    		if( def == null ) {
-    	    			player.sendMessage( "That name is not recognized." );
-    	    			return true;
-    	    		}
-    	    		
-    	    		ItemStack item = def.createItem();
-    	    		if( item == null ) {
-    	    			player.sendMessage( ChatColor.RED + "Couldn't create item. Check logs for details." );
-    	    			return true;
-    	    		}
-    	    		giveItemToPlayer( player, item );
-    	    		
-    			} else if( args[0].equalsIgnoreCase( "reload" ) ) {
-    				definitions.clear();
-    	    		loadDefinitions();
-    				sender.sendMessage( ChatColor.GREEN + "Reload complete." );
-    			} else if( args[0].equalsIgnoreCase( "enchantedbook" ) ) {
-    				/*
+	public boolean onCommand( CommandSender sender, Command cmd, String label, String[] args ) {
+		if( cmd.getName().equalsIgnoreCase("magicitems") ) {
+			if( args.length < 1 ) {
+				sender.sendMessage( "/magicitems <command>" );
+				sender.sendMessage( "  create - create an item" );
+				sender.sendMessage( "  reload - reload definitions" );
+			} else {
+				if( args[0].equalsIgnoreCase( "create" ) ) {
+					if( !(sender instanceof Player) ) {
+						sender.sendMessage( "This is a player only command." );
+						return true;
+					}
+					Player player = (Player)sender;
+
+					if( args.length < 2 ) {
+						player.sendMessage( "Usage: /magicitems create <name>" );
+						player.sendMessage( "Creates a magic item. <name> must be defined in the item configs." );
+						return true;
+					} 
+					Definition def = getDefinition( args[1] );
+					if( def == null ) {
+						player.sendMessage( "That name is not recognized." );
+						return true;
+					}
+
+					ItemStack item = def.createItem();
+					if( item == null ) {
+						player.sendMessage( ChatColor.RED + "Couldn't create item. Check logs for details." );
+						return true;
+					}
+					giveItemToPlayer( player, item );
+
+				} else if( args[0].equalsIgnoreCase( "reload" ) ) {
+					definitions.clear();
+					loadDefinitions();
+					sender.sendMessage( ChatColor.GREEN + "Reload complete." );
+				} else if( args[0].equalsIgnoreCase( "enchantedbook" ) ) {
+					/*
     				if( !(sender instanceof Player) ) {
     	    			sender.sendMessage( "This is a player only command." );
     	    			return true;
@@ -171,32 +171,32 @@ public class MagicItems extends JavaPlugin implements Listener {
     				if( args.length < 3 ) {
     					player.sendMessage( "Usage: /magicitems enchantbook <enchant> <level>" );
     				}
-    				
+
     				ItemStack item = new ItemStack( Material.ENCHANTED_BOOK );
     				EnchantmentStorageMeta meta = (EnchantmentStorageMeta)item.getItemMeta();
     				meta.
-    				*
-    				*/
-    				//TODO
-    			} else {
-    				sender.sendMessage( "[MagicItems] Unknown command: " + args[0] ); 
-    			}
-    		}
+					 *
+					 */
+					//TODO
+				} else {
+					sender.sendMessage( "[MagicItems] Unknown command: " + args[0] ); 
+				}
+			}
 			return true;
-    		
-    	}
-    	return false;
+
+		}
+		return false;
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH )
 	public void onPlayerInteract( PlayerInteractEvent event ) {
-		
+
 		Bukkit.broadcastMessage( "INTERACT, " + event.isCancelled() );
 		Bukkit.broadcastMessage( event.getAction().toString() + "," + event.getBlockFace().toString() );
 		if( event.hasBlock() ) Bukkit.broadcastMessage( event.getClickedBlock().toString() );
 		if( event.hasItem() ) {
-			
+
 			ItemStack item = event.getItem();
 			Definition def = getDefinition( item );
 			if( def == null ) return;
@@ -204,7 +204,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 			action.onInteract( event );
 		} 
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH, ignoreCancelled=true )
 	public void onPlayerInteractEntity( PlayerInteractEntityEvent event ) {
@@ -214,7 +214,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 		if( def == null ) return;
 		ItemAction action = def.createEvent( event.getPlayer(), item );
 		action.onInteractEntity( event );
-		
+
 	}
 
 	//-------------------------------------------------------------------------------------------------
@@ -222,9 +222,9 @@ public class MagicItems extends JavaPlugin implements Listener {
 	public void onInventoryClick( InventoryClickEvent event ) {
 		if( event.getAction() == InventoryAction.PICKUP_HALF &&
 				event.getClick() == ClickType.RIGHT ) {
-			
+
 			if( event.getWhoClicked() instanceof Player ) {
-				
+
 				Player player = (Player)event.getWhoClicked(); 
 				Definition def = getDefinition( event.getCurrentItem() );
 				if( def == null ) return;
@@ -233,10 +233,10 @@ public class MagicItems extends JavaPlugin implements Listener {
 			} 
 		} 
 	}
-	
+
 	private void passDamageEvent( Player player, EntityDamageByEntityEvent event, boolean offense ) {
 		// TODO charms
-		
+
 		// check item in hand, and armor slots
 		Definition def;
 		def = getDefinition( player.getItemInHand() );
@@ -248,7 +248,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 				action.onHurt( event );
 			}
 		}
-		
+
 		ItemStack[] armor = player.getInventory().getArmorContents();
 		for( ItemStack item : armor ) {
 			def = getDefinition( item );
@@ -262,36 +262,36 @@ public class MagicItems extends JavaPlugin implements Listener {
 			}
 		}
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH, ignoreCancelled=true )
 	public void onDamageEntity( EntityDamageByEntityEvent event ) {
-		
+
 		if( event.getDamager() instanceof Player ) {
-			
+
 			passDamageEvent( (Player)event.getDamager(), event, true ); 
 			if( event.isCancelled() ) return; 
 		}
-		
+
 		if( event.getEntity() instanceof Player ) {
 			// check item in hand, and armor slots
 			passDamageEvent( (Player)event.getEntity(), event, true );
 		}
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler
 	public void onPlayerItemBreak( PlayerItemBreakEvent event ) {
-		 
+
 		ItemStack item = event.getBrokenItem();
 		Definition def = getDefinition( item );
 		if( def == null ) return;
 		if( event.getBrokenItem().getAmount() != 0 ) return ;// another event cancelled the break.
 		if( def.getBreakable() ) return;
-		
+
 		ItemAction action = def.createEvent( event.getPlayer(), event.getBrokenItem() );
 		BreakResult result = action.onBreak( event );
-		
+
 		if( result == BreakResult.CONTINUE ) return;
 		if( result == BreakResult.KEEP_AND_FIX ) {
 			event.getBrokenItem().setAmount(1);			
@@ -300,9 +300,9 @@ public class MagicItems extends JavaPlugin implements Listener {
 			event.getBrokenItem().setDurability( 
 					(short)(event.getBrokenItem().getType().getMaxDurability()-1) );
 		}
-		
+
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH, ignoreCancelled=true )
 	public void onPlayerConsumeItem( PlayerItemConsumeEvent event ) {
@@ -313,14 +313,14 @@ public class MagicItems extends JavaPlugin implements Listener {
 		ItemAction action = def.createEvent( event.getPlayer(), item );
 		action.onConsume( event );
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH, ignoreCancelled=true )
 	public void onPlayerEquipItem( PlayerItemHeldEvent event ) {
 		ItemStack item = event.getPlayer().getInventory().getItem( event.getNewSlot() );
 		Definition def = getDefinition( item );
 		if( def == null ) return;
-		
+
 		ItemAction action = def.createEvent( event.getPlayer(), item );
 		action.onEquip( event );
 	}
@@ -331,31 +331,32 @@ public class MagicItems extends JavaPlugin implements Listener {
 		ItemStack item = event.getItem().getItemStack();
 		Definition def = getDefinition( item );
 		if( def == null ) return;
-		
+
 		ItemAction action = def.createEvent( event.getPlayer(), item );
 		action.onPickup( event );
 	}
+	
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH, ignoreCancelled=true )
 	public void onPotionSplashEvent( PotionSplashEvent event ) {
 		ThrownPotion potion = event.getPotion();
 		Definition def = getDefinition( potion.getItem() );
 		if( def == null ) return;
-		
+
 		Player source = null;
 		if( potion.getShooter() instanceof Player ) {
 			source = (Player)potion.getShooter();
 		} 
-		
+
 		ItemAction action = def.createEvent( source, potion.getItem() );
 		action.onSplash( event );
 	}
-	
+
 	//-------------------------------------------------------------------------------------------------
 	public static boolean isMagicItem( ItemStack item ) {
 		if( item == null ) return false;
-    	ItemMeta meta = item.getItemMeta();
-    	if( !meta.hasLore() ) return false;
-    	return meta.getLore().get(0).contains( Definition.MAGIC_CODE );
+		ItemMeta meta = item.getItemMeta();
+		if( !meta.hasLore() ) return false;
+		return meta.getLore().get(0).contains( Definition.MAGIC_CODE );
 	}
 }
