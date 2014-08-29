@@ -1,0 +1,5 @@
+enchanted book contains spell id
+spell is cast with enchanted book
+warp spell
+mana requirement
+xp bar is replaced with mana

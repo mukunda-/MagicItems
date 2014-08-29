@@ -1,0 +1,13 @@
+name: MagicItems
+main: com.mukunda.magicitems.MagicItems
+version: ${version}
+commands:
+  magicitems:
+    description: MagicItems admin interface.
+    usage: /magicitems ...
+    permission: magicitems.admin
+    
+permissions:
+  magicitems.admin:
+    description: MagicItems admin access.
+    default: op
