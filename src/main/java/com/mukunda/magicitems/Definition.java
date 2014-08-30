@@ -55,8 +55,8 @@ public class Definition {
 
 		manaCost = config.getDouble( "mana_cost", 0 );
 
-		List<String> bookLore = config.getStringList("lore");
-		lore = bookLore.toArray( new String[ bookLore.size() ] );
+		List<String> itemLore = config.getStringList("lore");
+		lore = itemLore.toArray( new String[ itemLore.size() ] );
 
 		plugin = config.getString( "plugin" );
 		if( plugin != null && plugin.isEmpty() ) plugin = null;
@@ -78,6 +78,8 @@ public class Definition {
 		} else {
 			if( type != ItemType.BOOK ) {
 				throw new ItemConfigException( "Missing MATERIAL." );
+			} else {
+				material = Material.ENCHANTED_BOOK;
 			}
 		}
 
@@ -153,7 +155,7 @@ public class Definition {
 		int index = source.indexOf( MAGIC_CODE ) ;
 		if( index == -1 ) return null;
 		StringBuilder builder = new StringBuilder();
-		for( int i = index+2; i < source.length(); i += 2 ) {
+		for( int i = index+3; i < source.length(); i += 2 ) {
 			builder.append( source.charAt(i) );
 		}
 		return builder.toString();
@@ -177,7 +179,7 @@ public class Definition {
 		meta.setLore( loreMeta );
 		item.setItemMeta( meta );
 
-		// appy enchantments
+		// apply enchantments
 
 		for( EnchantmentLevel enchant : safeEnchantments ) {
 			try {
@@ -243,9 +245,11 @@ public class Definition {
 				pluginInstance = Bukkit.getPluginManager().getPlugin( plugin );
 				if( pluginInstance == null ) return null; // plugin not loaded.
 				pl = pluginInstance;
+				if( !pl.isEnabled() ) return null;
 			}
 		} else {
 			pl = pluginInstance;
+			if( !pl.isEnabled() ) return null;
 		}
 
 		action.setup( pl, item, player );

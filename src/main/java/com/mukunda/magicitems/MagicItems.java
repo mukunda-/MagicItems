@@ -336,6 +336,8 @@ public class MagicItems extends JavaPlugin implements Listener {
 		action.onPickup( event );
 	}
 	
+ 
+	
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH, ignoreCancelled=true )
 	public void onPotionSplashEvent( PotionSplashEvent event ) {
