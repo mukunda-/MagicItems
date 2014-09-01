@@ -36,7 +36,12 @@
            <version>1.7.9-R0.2</version>
            <type>jar</type>
            <scope>provided</scope>
-       </dependency> 
+       </dependency>
+       <dependency>
+       	<groupId>com.mukunda</groupId>
+       	<artifactId>LoreMeta</artifactId>
+       	<version>0.0.1-SNAPSHOT</version>
+       </dependency>
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

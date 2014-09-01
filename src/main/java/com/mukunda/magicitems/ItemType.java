@@ -2,7 +2,7 @@ package com.mukunda.magicitems;
 
 public enum ItemType {
 	BOOK, WEAPON, TOOL, SPLASH, CONSUMABLE;
-
+ 
 	public static ItemType getType( String string ) {
 		if( string == null ) return null;
 		if( string.equalsIgnoreCase( "book" ) ) {

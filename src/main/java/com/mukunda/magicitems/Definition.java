@@ -10,12 +10,16 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.ChatColor;
+import org.bukkit.plugin.Plugin; 
+
+import com.mukunda.loremeta.LoreMeta;
+import com.mukunda.loremeta.MetaKeyText;
 
 public class Definition {
+	
+	public static final String LOREMETA_TAG = "MITM";
 
-	public static final String MAGIC_CODE = ChatColor.COLOR_CHAR + "\u0120";
+	//public static final String MAGIC_CODE = ChatColor.COLOR_CHAR + "\u0120";
 
 	private String name;
 	private String title;
@@ -141,6 +145,7 @@ public class Definition {
 	}
 
 	// todo - use LoreMeta
+	/*
 	private String encodeName() {
 		StringBuilder builder = new StringBuilder();
 		builder.append( MAGIC_CODE );
@@ -149,8 +154,8 @@ public class Definition {
 			builder.append( name.charAt(i) );
 		}
 		return builder.toString();
-	}
-
+	}*/
+/*
 	private static String decodeName( String source ) {
 		int index = source.indexOf( MAGIC_CODE ) ;
 		if( index == -1 ) return null;
@@ -159,7 +164,7 @@ public class Definition {
 			builder.append( source.charAt(i) );
 		}
 		return builder.toString();
-	}
+	}*/
 
 	private static String convertColorCodes( String source ) {
 		String str = source.replace( "&", "\u00A7" );
@@ -171,16 +176,18 @@ public class Definition {
 		ItemStack item = new ItemStack( material );
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName( convertColorCodes(title) );
-		ArrayList<String> loreMeta = new ArrayList<String>();
-		loreMeta.add( encodeName() );
+		ArrayList<String> lore = new ArrayList<String>();
 		for( String loreEntry : lore ) {
-			loreMeta.add( convertColorCodes(loreEntry) );
+			lore.add( convertColorCodes(loreEntry) );
 		}
-		meta.setLore( loreMeta );
+		meta.setLore( lore );
 		item.setItemMeta( meta );
+		
+		LoreMeta.setData( 
+				item, new MetaKeyText( LOREMETA_TAG ), getName() );
 
 		// apply enchantments
-
+		
 		for( EnchantmentLevel enchant : safeEnchantments ) {
 			try {
 				item.addEnchantment( enchant.enchantment, enchant.level );
@@ -202,9 +209,7 @@ public class Definition {
 
 	public static String tryGetName( ItemStack item ) {
 		if( item == null ) return null;
-		ItemMeta meta = item.getItemMeta();
-		if( !meta.hasLore() ) return null;
-		return decodeName( meta.getLore().get(0) );
+		return LoreMeta.getData( item, new MetaKeyText(LOREMETA_TAG) );
 	}
 
 	public ItemAction getActionInstance() {

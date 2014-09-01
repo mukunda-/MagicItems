@@ -8,5 +8,5 @@ public class ItemConfigException extends Exception {
 		// TODO Auto-generated constructor stub
 		super( string );
 	}
-
+ 
 }

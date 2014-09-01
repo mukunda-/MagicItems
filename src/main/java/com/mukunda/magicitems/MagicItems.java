@@ -104,14 +104,14 @@ public class MagicItems extends JavaPlugin implements Listener {
 		try {
 			Files.createDirectories( getDataFolder().toPath().resolve("items") );
 		} catch( IOException e ) {
-			getLogger().warning( "Couldn't setup data folders." );
+			getLogger().severe( "Couldn't setup data folders." );
 		}
 
 		loadDefinitions();
-
+		
 		getServer().getPluginManager().registerEvents( this, this );
 	}
-
+	
 	@Override
 	public void onDisable() {
 		context = null;
@@ -359,6 +359,6 @@ public class MagicItems extends JavaPlugin implements Listener {
 		if( item == null ) return false;
 		ItemMeta meta = item.getItemMeta();
 		if( !meta.hasLore() ) return false;
-		return meta.getLore().get(0).contains( Definition.MAGIC_CODE );
+		return meta.getLore().get(0).contains( Definition.LOREMETA_TAG );
 	}
 }

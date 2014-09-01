@@ -11,3 +11,6 @@ permissions:
   magicitems.admin:
     description: MagicItems admin access.
     default: op
+    
+depend:
+  - LoreMeta
