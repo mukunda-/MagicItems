@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
-
 package com.mukunda.magicitems;
-
+  
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,7 +62,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author mukunda
  *
  */
-public class MagicItems extends JavaPlugin implements Listener {
+public class MagicItems extends JavaPlugin implements Listener, MagicItemsAPI {
 
 	private static MagicItems context;
 	
@@ -398,7 +397,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 	 * {@inheritDoc}
 	 **************************************************************************/
 	@Override
-	public boolean isMagicItem( ItemStack item ) {
+	public boolean isMagicItem( ItemStack item ) { 
 		if( item == null ) return false;
 		ItemMeta meta = item.getItemMeta();
 		if( !meta.hasLore() ) return false;
