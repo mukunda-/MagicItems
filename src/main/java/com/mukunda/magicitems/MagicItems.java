@@ -1,3 +1,28 @@
+/*
+ * MagicItems
+ *
+ * Copyright (c) 2014 Mukunda Johnson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+
 package com.mukunda.magicitems;
 
 import java.io.File;
@@ -32,19 +57,31 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * MagicItem Bukkit plugin
+ * 
+ * @author mukunda
+ *
+ */
 public class MagicItems extends JavaPlugin implements Listener {
 
 	private static MagicItems context;
+	
+	//-----------------------------------------------------------------------------------
 	public static MagicItems getContext() {
 		return context;
 	}
 
+	//-----------------------------------------------------------------------------------
+	// loaded config files
 	private HashMap<String,Definition> definitions;
 
+	//-----------------------------------------------------------------------------------
 	public void loadDefinitions() {
 		loadDefinitions(null);
 	}
 
+	//-----------------------------------------------------------------------------------
 	public void loadDefinitions( File folder ) {
 		if( folder == null ) folder = new File( getDataFolder(), "items" );
 		File[] itemFiles = folder.listFiles();
@@ -79,16 +116,16 @@ public class MagicItems extends JavaPlugin implements Listener {
 				} catch( ItemConfigException e ) {
 					getLogger().warning( "Couldn't load \""+ bookName +"\" - " + e.getMessage() );
 				}
-			}
-
-
+			} 
 		}
 	}
 
+	//-----------------------------------------------------------------------------------
 	public Definition getDefinition( String name ) {
 		return definitions.get( name );
 	}
 
+	//-----------------------------------------------------------------------------------
 	public Definition getDefinition( ItemStack item ) {
 		if( item == null ) return null;
 		String name = Definition.tryGetName( item );
@@ -96,6 +133,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 		return getDefinition(name);
 	}
 
+	//-----------------------------------------------------------------------------------
 	@Override
 	public void onEnable() {
 		context = this;
@@ -112,11 +150,13 @@ public class MagicItems extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents( this, this );
 	}
 	
+	//-----------------------------------------------------------------------------------
 	@Override
 	public void onDisable() {
 		context = null;
 	}
 
+	//-----------------------------------------------------------------------------------
 	@SuppressWarnings("deprecation")
 	private void giveItemToPlayer( Player player, ItemStack item ) {
 		player.getInventory().addItem( item );
@@ -124,6 +164,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 		player.sendMessage( ChatColor.GREEN + "Here you go.");
 	}
 
+	//-----------------------------------------------------------------------------------
 	@Override 
 	public boolean onCommand( CommandSender sender, Command cmd, String label, String[] args ) {
 		if( cmd.getName().equalsIgnoreCase("magicitems") ) {
@@ -234,6 +275,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 		} 
 	}
 
+	//-------------------------------------------------------------------------------------------------
 	private void passDamageEvent( Player player, EntityDamageByEntityEvent event, boolean offense ) {
 		// TODO charms
 
@@ -335,9 +377,7 @@ public class MagicItems extends JavaPlugin implements Listener {
 		ItemAction action = def.createEvent( event.getPlayer(), item );
 		action.onPickup( event );
 	}
-	
- 
-	
+	 
 	//-------------------------------------------------------------------------------------------------
 	@EventHandler( priority = EventPriority.HIGH, ignoreCancelled=true )
 	public void onPotionSplashEvent( PotionSplashEvent event ) {
@@ -354,8 +394,11 @@ public class MagicItems extends JavaPlugin implements Listener {
 		action.onSplash( event );
 	}
 
-	//-------------------------------------------------------------------------------------------------
-	public static boolean isMagicItem( ItemStack item ) {
+	/**************************************************************************
+	 * {@inheritDoc}
+	 **************************************************************************/
+	@Override
+	public boolean isMagicItem( ItemStack item ) {
 		if( item == null ) return false;
 		ItemMeta meta = item.getItemMeta();
 		if( !meta.hasLore() ) return false;
