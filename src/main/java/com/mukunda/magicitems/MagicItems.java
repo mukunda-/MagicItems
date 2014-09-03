@@ -57,7 +57,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * MagicItem Bukkit plugin
+ * MagicItems Bukkit plugin
  * 
  * @author mukunda
  *
@@ -70,18 +70,22 @@ public class MagicItems extends JavaPlugin implements Listener, MagicItemsAPI {
 	public static MagicItems getContext() {
 		return context;
 	}
+	
+	public static MagicItemsAPI getAPI() {
+		return context;
+	}
 
 	//-----------------------------------------------------------------------------------
 	// loaded config files
 	private HashMap<String,Definition> definitions;
 
 	//-----------------------------------------------------------------------------------
-	public void loadDefinitions() {
+	private void loadDefinitions() {
 		loadDefinitions(null);
 	}
 
 	//-----------------------------------------------------------------------------------
-	public void loadDefinitions( File folder ) {
+	private void loadDefinitions( File folder ) {
 		if( folder == null ) folder = new File( getDataFolder(), "items" );
 		File[] itemFiles = folder.listFiles();
 		for( File file : itemFiles ) {
@@ -391,7 +395,7 @@ public class MagicItems extends JavaPlugin implements Listener, MagicItemsAPI {
 
 		ItemAction action = def.createEvent( source, potion.getItem() );
 		action.onSplash( event );
-	}
+	} 
 
 	/**************************************************************************
 	 * {@inheritDoc}
@@ -402,5 +406,30 @@ public class MagicItems extends JavaPlugin implements Listener, MagicItemsAPI {
 		ItemMeta meta = item.getItemMeta();
 		if( !meta.hasLore() ) return false;
 		return meta.getLore().get(0).contains( Definition.LOREMETA_TAG );
+	}
+	
+	/**************************************************************************
+	 * {@inheritDoc}
+	 **************************************************************************/
+	@Override
+	public Object fireCustomAction( ItemStack item, Player player, 
+			String action, Object...data ) {
+		
+		Definition def = getDefinition( item );
+		if( def == null ) return new NotAMagicItem();
+
+		ItemAction event = def.createEvent( player, item );
+		return event.onCustom( action, data );
+	}
+	
+	/**************************************************************************
+	 * {@inheritDoc}
+	 **************************************************************************/
+	@Override
+	public ItemStack createItem( String name ) {
+		if( name == null ) return null;
+		Definition def = getDefinition( name );
+		if( def == null ) return null;
+		return def.createItem();
 	}
 }

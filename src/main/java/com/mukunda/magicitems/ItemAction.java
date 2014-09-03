@@ -210,13 +210,15 @@ public abstract class ItemAction {
 	/**************************************************************************
 	 * Called when a plugin calls MagicItems.fireCustomAction( ... )
 	 * 
-	 * @param action Name of implementation defined action, passed to
-	 *               fireCustomAction
+	 * @param action Name of implementation defined action. This is a value
+	 * 	             passed in from fireCustomAction, and it may be null.
 	 *               
 	 * @param data   Optional objects attached to custom action.
+	 * @return       Data returned to caller.
 	 **************************************************************************/
-	public void onCustom( String action, Object ... data ) {
-		
+	public Object onCustom( String action, Object ... data ) {
+		// default: nothing
+		return null;
 	}
 	
 	//----------------------------------------------------------

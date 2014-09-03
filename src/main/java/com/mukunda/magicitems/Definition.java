@@ -39,25 +39,32 @@ import org.bukkit.plugin.Plugin;
 import com.mukunda.loremeta.LoreMeta;
 import com.mukunda.loremeta.MetaKeyText;
 
+/**
+ * Holds a loaded item configuration entry.
+ * 
+ * @author mukunda
+ *
+ */
 public class Definition {
 	
 	public static final String LOREMETA_TAG = "MITM";
 
 	//public static final String MAGIC_CODE = ChatColor.COLOR_CHAR + "\u0120";
 
-	private String name;
-	private String title;
-	private ItemType type; 
-	private boolean breakable;
-	private double manaCost = 5;
-	private String[] lore;
-	private String plugin;
+	private final String name;
+	private final String title;
+	private final ItemType type; 
+	private final boolean breakable;
+	private final double manaCost;
+	private final String[] lore;
+	private final String plugin;
 	private Plugin pluginInstance;
-	private String className;
-	private Class<?> classT;
-	private Material material;
+	private final String className;
+	private Class<?> classT = null;
+	private final Material material;
 
 	private class EnchantmentLevel {
+		/// holds an enchantment, and its level.
 		public Enchantment enchantment;
 		public int level;
 
@@ -67,8 +74,8 @@ public class Definition {
 		}
 	}
 
-	private List<EnchantmentLevel> safeEnchantments;
-	private List<EnchantmentLevel> unsafeEnchantments;
+	private final List<EnchantmentLevel> safeEnchantments;
+	private final List<EnchantmentLevel> unsafeEnchantments;
 
 	public Definition( ConfigurationSection config ) throws ItemConfigException {
 
@@ -86,11 +93,14 @@ public class Definition {
 		List<String> itemLore = config.getStringList("lore");
 		lore = itemLore.toArray( new String[ itemLore.size() ] );
 
-		plugin = config.getString( "plugin" );
-		if( plugin != null && plugin.isEmpty() ) plugin = null;
-
-		className = config.getString( "class" );
-		if( className == null && className.isEmpty() ) className = null;
+		String pluginName =config.getString( "plugin" );
+		if( pluginName != null && pluginName.isEmpty() ) pluginName = null;
+		plugin = pluginName;
+		
+		String classNameInitializer;
+		classNameInitializer = config.getString( "class" );
+		if( classNameInitializer != null && classNameInitializer.isEmpty() ) classNameInitializer = null;
+		className = classNameInitializer;
 
 		breakable = config.getBoolean( "breakable", true );
 
@@ -111,17 +121,18 @@ public class Definition {
 			}
 		}
 
-		safeEnchantments = new ArrayList<EnchantmentLevel>();	
-		unsafeEnchantments = new ArrayList<EnchantmentLevel>();
-
 		if( config.isConfigurationSection("enchant") ) {
 			safeEnchantments = readEnchantments( 
 					config.getConfigurationSection("enchant") );
+		} else {
+			safeEnchantments = new ArrayList<EnchantmentLevel>();		
 		}
 
 		if( config.isConfigurationSection("unsafe_enchant") ) {
 			unsafeEnchantments = readEnchantments( 
 					config.getConfigurationSection("unsafe_enchant") );
+		} else {
+			unsafeEnchantments = new ArrayList<EnchantmentLevel>();			
 		}
 
 

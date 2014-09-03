@@ -24,9 +24,56 @@
 
 package com.mukunda.magicitems;
 
+/**
+ * The different types of MagicItems
+ * 
+ * @author mukunda
+ *
+ */
 public enum ItemType {
-	BOOK, WEAPON, TOOL, SPLASH, CONSUMABLE;
+	
+	/**
+	 * A magic item that is locked to being an Enchanted Book.
+	 * 
+	 */
+	BOOK,
+	
+	/**
+	 * An item that is ideally a weapon material. I think
+	 * it can be other materials too though...
+	 */
+	WEAPON, 
+	
+	/**
+	 * An item that is ideally an armor material. I think
+	 * it can be other materials too though...
+	 */
+	ARMOR,
+	
+	/**
+	 * Must be a tool, such as a pickaxe or axe or hoe.
+	 * 
+	 */
+	TOOL, 
+	
+	/**
+	 * A splash potion.
+	 * 
+	 */
+	SPLASH, 
+	
+	/**
+	 * A consumable item, such as bread, or an apple, or a potion.
+	 * 
+	 */
+	CONSUMABLE;
  
+	/**
+	 * Translate a string into an ItemType
+	 * 
+	 * @param string String to test, must equal one of the item type names.
+	 * @return       ItemType made from string.
+	 */
 	public static ItemType getType( String string ) {
 		if( string == null ) return null;
 		if( string.equalsIgnoreCase( "book" ) ) {

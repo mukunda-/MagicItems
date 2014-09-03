@@ -24,16 +24,46 @@
 
 package com.mukunda.magicitems;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Public MagicItems access.
+ * 
+ * @author mukunda
+ */
 public interface MagicItemsAPI {
 
 	/************************************************************************************
-	 * Check if an item is a MagicItem, i.e. has MagicItem data associated with it.
+	 * Check if an item is a MagicItem, i.e. it has MagicItem data associated with it.
 	 * 
 	 * @param item Item to check
 	 * @return     true if the item has embedded MagicItem tags.
 	 ************************************************************************************/
 	public boolean isMagicItem( ItemStack item );
+	
+	/************************************************************************************
+	 * Send a custom action to a MagicItem
+	 * 
+	 * @param item   MagicItem to trigger action with.
+	 * @param player Player to associate with event, may be null.
+	 * @param action Name of action to fire, this is implementation defined, and can even
+	 *               be null.
+	 * @param data   User data to pass to the handler
+	 * @return       If the item is not a valid MagicItem object, this will return a
+	 *               NotAMagicItem instance. Otherwise, this returns the data returned
+	 *               from the custom handler, which may be null.
+	 ************************************************************************************/
+	public Object fireCustomAction( ItemStack item, Player player, 
+									String action, Object...data );
+	
+	/************************************************************************************
+	 * Create a MagicItem from a loaded configuration.
+	 * 
+	 * @param name Name of MagicItem to create. Must be defined in configs.
+	 * @return     New ItemStack created from the definition, or null if the name
+	 *             was invalid or if the definition contained an error.
+	 ************************************************************************************/
+	public ItemStack createItem( String name );
 	
 }
