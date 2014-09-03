@@ -10,4 +10,10 @@ public class TestBook extends ItemAction {
 	public void onInteract( PlayerInteractEvent event ) {
 		Bukkit.broadcastMessage( "BOOK INTERACT." );
 	}
+	
+	public Object onCustom( String action, Object ... data  ) {
+		Bukkit.broadcastMessage( "ONCUSTOM action=" + action );
+		
+		return null;
+	}
 }

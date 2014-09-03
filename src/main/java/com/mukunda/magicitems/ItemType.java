@@ -66,7 +66,12 @@ public enum ItemType {
 	 * A consumable item, such as bread, or an apple, or a potion.
 	 * 
 	 */
-	CONSUMABLE;
+	CONSUMABLE,
+	
+	/**
+	 * Unspecific material type.
+	 */
+	OTHER;
  
 	/**
 	 * Translate a string into an ItemType
@@ -86,6 +91,8 @@ public enum ItemType {
 			return SPLASH;
 		} else if( string.equalsIgnoreCase( "consumable" ) ) {
 			return CONSUMABLE;
+		} else if( string.equalsIgnoreCase( "other" ) ) {
+			return OTHER;
 		}
 		return null;
 	}

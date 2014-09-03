@@ -78,6 +78,12 @@ public class MagicItems extends JavaPlugin implements Listener, MagicItemsAPI {
 	//-----------------------------------------------------------------------------------
 	// loaded config files
 	private HashMap<String,Definition> definitions;
+	
+	//-----------------------------------------------------------------------------------
+	public void reloadDefinitions() {
+		definitions.clear();
+		loadDefinitions();
+	}
 
 	//-----------------------------------------------------------------------------------
 	private void loadDefinitions() {
@@ -161,7 +167,7 @@ public class MagicItems extends JavaPlugin implements Listener, MagicItemsAPI {
 
 	//-----------------------------------------------------------------------------------
 	@SuppressWarnings("deprecation")
-	private void giveItemToPlayer( Player player, ItemStack item ) {
+	public static void giveItemToPlayer( Player player, ItemStack item ) {
 		player.getInventory().addItem( item );
 		player.updateInventory();
 		player.sendMessage( ChatColor.GREEN + "Here you go.");
@@ -181,30 +187,9 @@ public class MagicItems extends JavaPlugin implements Listener, MagicItemsAPI {
 						sender.sendMessage( "This is a player only command." );
 						return true;
 					}
-					Player player = (Player)sender;
-
-					if( args.length < 2 ) {
-						player.sendMessage( "Usage: /magicitems create <name>" );
-						player.sendMessage( "Creates a magic item. <name> must be defined in the item configs." );
-						return true;
-					} 
-					Definition def = getDefinition( args[1] );
-					if( def == null ) {
-						player.sendMessage( "That name is not recognized." );
-						return true;
-					}
-
-					ItemStack item = def.createItem();
-					if( item == null ) {
-						player.sendMessage( ChatColor.RED + "Couldn't create item. Check logs for details." );
-						return true;
-					}
-					giveItemToPlayer( player, item );
-
+					
 				} else if( args[0].equalsIgnoreCase( "reload" ) ) {
-					definitions.clear();
-					loadDefinitions();
-					sender.sendMessage( ChatColor.GREEN + "Reload complete." );
+					
 				} else if( args[0].equalsIgnoreCase( "enchantedbook" ) ) {
 					/*
     				if( !(sender instanceof Player) ) {
